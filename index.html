@@ -1,0 +1,1928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaptopFinder Pro - AI-Powered Laptop Recommendations</title>
+    <style>
+        /* CSS Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #ffffff;
+            overflow-x: hidden;
+            background: #0a0a0a;
+        }
+
+        /* Video Background */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .video-background video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            /* Ensure seamless loop */
+            filter: brightness(0.7) contrast(1.1);
+        }
+
+        /* Fallback for browsers that don't support object-fit */
+        @supports not (object-fit: cover) {
+            .video-background video {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                min-width: 100%;
+                min-height: 100%;
+                width: auto;
+                height: auto;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 20, 40, 0.8), rgba(20, 0, 40, 0.8));
+            z-index: -1;
+        }
+
+        /* Header and Navigation */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(15px);
+            padding: 1rem 0;
+            z-index: 1000;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            border-bottom: 1px solid rgba(64, 224, 255, 0.2);
+        }
+
+        .header.hidden {
+            opacity: 0;
+            transform: translateY(-100%);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            height: 45px;
+            width: auto;
+            filter: drop-shadow(0 2px 4px rgba(64, 224, 255, 0.3));
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2.5rem;
+        }
+
+        .mobile-menu-button {
+            display: none;
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 2000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 3rem;
+        }
+
+        .mobile-nav.show {
+            display: flex;
+        }
+
+        .mobile-nav a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+        }
+
+        .mobile-nav a:hover {
+            color: #40e0ff;
+            background: rgba(64, 224, 255, 0.1);
+        }
+
+        .close-mobile-menu {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.05rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #40e0ff;
+            text-shadow: 0 0 8px rgba(64, 224, 255, 0.5);
+        }
+
+        .nav-links a:hover::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #40e0ff, #00bcd4);
+        }
+
+        /* Main Content Container */
+        .main-content {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 2rem;
+            position: relative;
+        }
+
+        .hero-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #40e0ff;
+            border-radius: 50%;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .hero-logo {
+            width: 250px;
+            height: auto;
+            margin-bottom: 2rem;
+            animation: fadeInUp 1.2s ease;
+            filter: drop-shadow(0 4px 12px rgba(64, 224, 255, 0.4));
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #40e0ff, #00bcd4, #0099cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 1.2s ease 0.3s both;
+            text-shadow: 0 0 20px rgba(64, 224, 255, 0.3);
+        }
+
+        .hero-subtitle {
+            font-size: 1.6rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+            animation: fadeInUp 1.2s ease 0.6s both;
+            max-width: 600px;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #40e0ff, #00bcd4);
+            color: #000;
+            padding: 1.2rem 3rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            animation: fadeInUp 1.2s ease 0.9s both;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 8px 24px rgba(64, 224, 255, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(64, 224, 255, 0.5);
+            background: linear-gradient(135deg, #50f0ff, #10ccd4);
+        }
+
+        /* Form Section */
+        .form-section {
+            background: rgba(0, 10, 20, 0.95);
+            backdrop-filter: blur(25px);
+            padding: 5rem 3rem;
+            margin: 3rem auto;
+            border-radius: 25px;
+            max-width: 900px;
+            border: 2px solid rgba(64, 224, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .form-title {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, #40e0ff, #00bcd4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 3rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideInUp 0.8s ease forwards;
+        }
+
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.4s; }
+        .form-group:nth-child(4) { animation-delay: 0.6s; }
+        .form-group:nth-child(5) { animation-delay: 0.8s; }
+        .form-group:nth-child(6) { animation-delay: 1.0s; }
+
+        .form-label {
+            display: block;
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #40e0ff;
+            text-shadow: 0 0 10px rgba(64, 224, 255, 0.3);
+        }
+
+        .radio-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .radio-option {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .radio-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(64, 224, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .radio-option:hover::before {
+            left: 100%;
+        }
+
+        .radio-option:hover {
+            background: rgba(64, 224, 255, 0.1);
+            border-color: #40e0ff;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(64, 224, 255, 0.2);
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+
+        .radio-option.selected {
+            background: rgba(64, 224, 255, 0.15);
+            border-color: #40e0ff;
+            box-shadow: 0 0 20px rgba(64, 224, 255, 0.3);
+        }
+
+        .radio-label {
+            font-size: 1.1rem;
+            line-height: 1.4;
+        }
+
+        .radio-label strong {
+            color: #40e0ff;
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .select-input {
+            width: 100%;
+            padding: 1.2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .select-input:focus {
+            outline: none;
+            border-color: #40e0ff;
+            background: rgba(64, 224, 255, 0.1);
+            box-shadow: 0 0 15px rgba(64, 224, 255, 0.3);
+        }
+
+        .slider-container {
+            margin-top: 1.5rem;
+        }
+
+        .slider-input {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+            position: relative;
+        }
+
+        .slider-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            background: linear-gradient(135deg, #40e0ff, #00bcd4);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(64, 224, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .slider-input::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 18px rgba(64, 224, 255, 0.6);
+        }
+
+        .slider-value {
+            text-align: center;
+            margin-top: 1rem;
+            font-weight: 700;
+            color: #40e0ff;
+            font-size: 1.3rem;
+            text-shadow: 0 0 8px rgba(64, 224, 255, 0.5);
+        }
+
+        .submit-button {
+            width: 100%;
+            background: linear-gradient(135deg, #40e0ff, #00bcd4);
+            color: #000;
+            padding: 1.8rem;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            margin-top: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 30px rgba(64, 224, 255, 0.3);
+        }
+
+        .submit-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(64, 224, 255, 0.5);
+            background: linear-gradient(135deg, #50f0ff, #10ccd4);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Recommendation Section */
+        .recommendation-section {
+            background: rgba(0, 10, 20, 0.95);
+            backdrop-filter: blur(25px);
+            padding: 4rem 3rem;
+            margin: 3rem auto;
+            border-radius: 25px;
+            max-width: 1200px;
+            border: 2px solid rgba(64, 224, 255, 0.2);
+            display: none;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .recommendation-section.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .recommendation-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #40e0ff;
+            font-weight: 700;
+            text-shadow: 0 0 15px rgba(64, 224, 255, 0.5);
+        }
+
+        .laptops-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .laptop-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .laptop-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #40e0ff, #00bcd4);
+        }
+
+        .laptop-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(64, 224, 255, 0.2);
+            border-color: #40e0ff;
+        }
+
+        .laptop-image {
+            width: 100%;
+            max-width: 250px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin: 0 auto 1.5rem auto;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .laptop-card:hover .laptop-image {
+            transform: scale(1.05);
+        }
+
+        .laptop-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+            color: #40e0ff;
+        }
+
+        .laptop-price {
+            font-size: 1.8rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #00ff88;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+        }
+
+        .laptop-specs {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .laptop-specs li {
+            padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .spec-label {
+            font-weight: 600;
+            color: #40e0ff;
+            font-size: 0.95rem;
+        }
+
+        .spec-value {
+            font-weight: 500;
+            color: #ffffff;
+            text-align: right;
+        }
+
+        .rating {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            gap: 0.3rem;
+        }
+
+        .star {
+            color: #ffd700;
+            font-size: 1.2rem;
+        }
+
+        .rating-text {
+            margin-left: 0.5rem;
+            color: #40e0ff;
+            font-weight: 600;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .learn-more-button {
+            flex: 1;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: #ffffff;
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .learn-more-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
+            background: linear-gradient(135deg, #ff7b7b, #fe6a34);
+        }
+
+        .video-review-button {
+            flex: 1;
+            background: linear-gradient(135deg, #9c27b0, #673ab7);
+            color: #ffffff;
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .video-review-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(156, 39, 176, 0.4);
+            background: linear-gradient(135deg, #ac37c0, #774bc7);
+        }
+
+        .best-match {
+            border: 3px solid #00ff88;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+            position: relative;
+        }
+
+        .best-match::after {
+            content: 'BEST MATCH';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
+            color: #000;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        /* Contact Section */
+        .contact-section {
+            background: rgba(0, 10, 20, 0.95);
+            backdrop-filter: blur(25px);
+            padding: 5rem 3rem;
+            margin: 3rem auto;
+            border-radius: 25px;
+            max-width: 800px;
+            border: 2px solid rgba(64, 224, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            display: none;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+
+        .contact-section.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .contact-title {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #40e0ff, #00bcd4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        .contact-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .contact-form {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .contact-input {
+            width: 100%;
+            padding: 1.2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .contact-input:focus {
+            outline: none;
+            border-color: #40e0ff;
+            background: rgba(64, 224, 255, 0.1);
+            box-shadow: 0 0 15px rgba(64, 224, 255, 0.3);
+        }
+
+        .contact-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .contact-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .contact-button {
+            background: linear-gradient(135deg, #40e0ff, #00bcd4);
+            color: #000;
+            padding: 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 30px rgba(64, 224, 255, 0.3);
+        }
+
+        .contact-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(64, 224, 255, 0.5);
+            background: linear-gradient(135deg, #50f0ff, #10ccd4);
+        }
+
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+            padding-top: 3rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .contact-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .contact-item:hover {
+            background: rgba(64, 224, 255, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .contact-icon {
+            font-size: 2rem;
+            color: #40e0ff;
+            margin-bottom: 1rem;
+        }
+
+        .contact-item h4 {
+            color: #40e0ff;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        /* About Section */
+        .about-section {
+            background: rgba(0, 10, 20, 0.95);
+            backdrop-filter: blur(25px);
+            padding: 5rem 3rem;
+            margin: 3rem auto;
+            border-radius: 25px;
+            max-width: 900px;
+            border: 2px solid rgba(64, 224, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            display: none;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+
+        .about-section.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .about-title {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #40e0ff, #00bcd4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        .about-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .feature-card:hover {
+            background: rgba(64, 224, 255, 0.1);
+            transform: translateY(-5px);
+            border-color: #40e0ff;
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #40e0ff;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            color: #40e0ff;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(0, 0, 0, 0.95);
+            padding: 4rem 2rem 2rem 2rem;
+            text-align: center;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(64, 224, 255, 0.2);
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-link {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            text-decoration: none;
+            transition: all 0.4s ease;
+            font-size: 1.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .social-link:hover {
+            background: #40e0ff;
+            color: #000;
+            transform: translateY(-8px) scale(1.1);
+            box-shadow: 0 10px 25px rgba(64, 224, 255, 0.4);
+            border-color: #40e0ff;
+        }
+
+        .footer-text {
+            opacity: 0.7;
+            font-size: 1rem;
+            margin-top: 2rem;
+        }
+
+        /* Loading Animation */
+        .loading-spinner {
+            display: none;
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(64, 224, 255, 0.3);
+            border-top: 4px solid #40e0ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 968px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.3rem;
+            }
+
+            .form-section, .contact-section, .about-section {
+                margin: 2rem 1rem;
+                padding: 3rem 2rem;
+            }
+
+            .radio-group {
+                grid-template-columns: 1fr;
+            }
+
+            .laptops-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+
+            .contact-info {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu-button {
+                display: block;
+            }
+
+            .hero-logo {
+                width: 180px;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .form-title, .contact-title, .about-title {
+                font-size: 2.2rem;
+            }
+
+            .recommendation-section, .contact-section, .about-section {
+                margin: 2rem 1rem;
+                padding: 3rem 1.5rem;
+            }
+
+            .laptops-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-form {
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .form-title, .contact-title, .about-title {
+                font-size: 1.8rem;
+            }
+
+            .social-links {
+                gap: 1rem;
+            }
+
+            .social-link {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+
+            .form-section, .contact-section, .about-section {
+                padding: 2rem 1rem;
+            }
+
+            .laptop-card {
+                padding: 1.5rem;
+            }
+
+            .contact-input {
+                padding: 1rem;
+                font-size: 1rem;
+            }
+
+            .feature-card {
+                padding: 1.5rem;
+            }
+
+            .mobile-nav a {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Video Background -->
+    <div class="video-background">
+        <!-- 
+        TO ADD YOUR OWN VIDEO:
+        1. Upload your video file to the project (drag and drop into file explorer)
+        2. Replace "your-video-file.mp4" below with your actual filename
+        3. Supported formats: MP4, WebM, OGV
+        4. Recommended: Use a video that's 10-30 seconds long for seamless looping
+        5. For best performance, compress your video to under 50MB
+        
+        Example: If your video is named "background.mp4", change the src to:
+        <source src="background.mp4" type="video/mp4">
+        -->
+        <video autoplay muted loop playsinline preload="auto">
+            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+            <source src="https://sample-videos.com/zip/10/webm/SampleVideo_1280x720_1mb.webm" type="video/webm">
+            <!-- Fallback for older browsers -->
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <div class="video-overlay"></div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="nav-container">
+            <!-- Replace this URL with your actual logo -->
+            <img src="https://via.placeholder.com/250x60/40e0ff/000000?text=LaptopFinder+Pro" alt="LaptopFinder Pro" class="logo">
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#home" onclick="scrollToSection('home')">Home</a></li>
+                    <li><a href="#recommend" onclick="scrollToSection('recommend')">Find Laptop</a></li>
+                    <li><a href="#about" onclick="scrollToSection('about')">About</a></li>
+                    <li><a href="#contact" onclick="scrollToSection('contact')">Contact</a></li>
+                </ul>
+                <button class="mobile-menu-button" onclick="toggleMobileMenu()">☰</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+        <button class="close-mobile-menu" onclick="toggleMobileMenu()">✕</button>
+        <a href="#home" onclick="mobileNavigate('home')">Home</a>
+        <a href="#recommend" onclick="mobileNavigate('recommend')">Find Laptop</a>
+        <a href="#about" onclick="mobileNavigate('about')">About</a>
+        <a href="#contact" onclick="mobileNavigate('contact')">Contact</a>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero-section" id="home">
+            <div class="hero-particles"></div>
+            <!-- Replace this URL with your actual logo -->
+            <img src="https://via.placeholder.com/350x120/40e0ff/000000?text=LaptopFinder+Pro" alt="LaptopFinder Pro" class="hero-logo">
+            <h1 class="hero-title">Find Your Perfect Laptop</h1>
+            <p class="hero-subtitle">Advanced AI-powered recommendations with detailed specs, budgets, and video reviews to help you make the best choice</p>
+            <button class="cta-button" onclick="scrollToForm()">Start Finding</button>
+        </section>
+
+        <!-- Form Section -->
+        <section class="form-section" id="recommend">
+            <h2 class="form-title">Tell Us Your Requirements</h2>
+            <form id="laptopForm">
+                <!-- Question 1: Primary Use -->
+                <div class="form-group">
+                    <label class="form-label">What's your primary use case?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="use-student" name="primaryUse" value="student">
+                            <label class="radio-label" for="use-student">
+                                <strong>Student / Learning</strong><br>
+                                Note-taking, research, online classes, assignments
+                            </label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="use-work" name="primaryUse" value="work">
+                            <label class="radio-label" for="use-work">
+                                <strong>Business / Office Work</strong><br>
+                                Productivity apps, emails, presentations, meetings
+                            </label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="use-creative" name="primaryUse" value="creative">
+                            <label class="radio-label" for="use-creative">
+                                <strong>Creative Work</strong><br>
+                                Photo/video editing, graphic design, content creation
+                            </label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="use-gaming" name="primaryUse" value="gaming">
+                            <label class="radio-label" for="use-gaming">
+                                <strong>Gaming / Entertainment</strong><br>
+                                Gaming, streaming, multimedia consumption
+                            </label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="use-programming" name="primaryUse" value="programming">
+                            <label class="radio-label" for="use-programming">
+                                <strong>Programming / Development</strong><br>
+                                Coding, software development, data analysis
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 2: Budget Range -->
+                <div class="form-group">
+                    <label class="form-label">What's your budget range?</label>
+                    <div class="slider-container">
+                        <input type="range" id="budgetSlider" class="slider-input" min="300" max="3000" value="1000" step="50">
+                        <div class="slider-value" id="budgetValue">$1,000</div>
+                    </div>
+                </div>
+
+                <!-- Question 3: Screen Size Preference -->
+                <div class="form-group">
+                    <label class="form-label">Preferred screen size?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="size-small" name="screenSize" value="small">
+                            <label class="radio-label" for="size-small">
+                                <strong>13-14 inches</strong><br>
+                                Ultra-portable, lightweight for travel
+                            </label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="size-medium" name="screenSize" value="medium">
+                            <label class="radio-label" for="size-medium">
+                                <strong>15-16 inches</strong><br>
+                                Perfect balance of screen space and portability
+                            </label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="size-large" name="screenSize" value="large">
+                            <label class="radio-label" for="size-large">
+                                <strong>17+ inches</strong><br>
+                                Maximum screen real estate for productivity
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 4: Performance Priority -->
+                <div class="form-group">
+                    <label class="form-label">What's most important to you?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="priority-battery" name="priority" value="battery">
+                            <label class="radio-label" for="priority-battery">
+                                <strong>Battery Life</strong><br>
+                                All-day usage without charging
+                            </label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="priority-performance" name="priority" value="performance">
+                            <label class="radio-label" for="priority-performance">
+                                <strong>Performance</strong><br>
+                                Fast processing and multitasking
+                            </label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="priority-portability" name="priority" value="portability">
+                            <label class="radio-label" for="priority-portability">
+                                <strong>Portability</strong><br>
+                                Lightweight and thin design
+                            </label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="priority-display" name="priority" value="display">
+                            <label class="radio-label" for="priority-display">
+                                <strong>Display Quality</strong><br>
+                                High resolution and color accuracy
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 5: Operating System -->
+                <div class="form-group">
+                    <label class="form-label">Preferred operating system?</label>
+                    <select class="select-input" id="osSelect" name="operatingSystem">
+                        <option value="">Select your preference</option>
+                        <option value="windows">Windows 11</option>
+                        <option value="macos">macOS</option>
+                        <option value="chromeos">Chrome OS</option>
+                        <option value="linux">Linux</option>
+                        <option value="any">No preference</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="submit-button">Find My Perfect Laptop</button>
+                <div class="loading-spinner" id="loadingSpinner"></div>
+            </form>
+        </section>
+
+        <!-- Recommendation Section -->
+        <section class="recommendation-section" id="recommendations">
+            <h2 class="recommendation-title">Your Personalized Recommendations</h2>
+            <div class="laptops-grid" id="laptopsGrid">
+                <!-- Laptop recommendations will be dynamically inserted here -->
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="about-section" id="about">
+            <h2 class="about-title">About LaptopFinder Pro</h2>
+            <div class="about-content">
+                <p>LaptopFinder Pro uses advanced AI algorithms to analyze your specific needs and preferences, 
+                providing personalized laptop recommendations that perfectly match your requirements and budget. 
+                Our comprehensive database includes detailed specifications, real user ratings, and expert reviews 
+                to help you make the best decision.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI-Powered Matching</h3>
+                    <p>Our smart algorithm analyzes your usage patterns and preferences to find the perfect laptop match.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3>Budget Optimization</h3>
+                    <p>Get the best value for your money with recommendations tailored to your specific budget range.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Detailed Analysis</h3>
+                    <p>Complete specs, user reviews, and video demonstrations help you understand every recommendation.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Real-Time Updates</h3>
+                    <p>Our database is constantly updated with the latest models and current market prices.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="contact-section" id="contact">
+            <h2 class="contact-title">Get In Touch</h2>
+            <p class="contact-subtitle">Have questions about our recommendations? Need help choosing the perfect laptop? 
+            We're here to assist you in finding exactly what you need.</p>
+            
+            <form class="contact-form" id="contactForm">
+                <input type="text" class="contact-input" placeholder="Your Name" required>
+                <input type="email" class="contact-input" placeholder="Your Email" required>
+                <input type="text" class="contact-input" placeholder="Subject" required>
+                <textarea class="contact-input contact-textarea" placeholder="Your Message" required></textarea>
+                <button type="submit" class="contact-button">Send Message</button>
+            </form>
+
+            <div class="contact-info">
+                <div class="contact-item">
+                    <div class="contact-icon">📧</div>
+                    <h4>Email Support</h4>
+                    <p>support@laptopfinderpro.com</p>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">💬</div>
+                    <h4>Live Chat</h4>
+                    <p>Available 24/7</p>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">⏰</div>
+                    <h4>Response Time</h4>
+                    <p>Within 2 hours</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="social-links">
+            <!-- Replace these with your actual social media links -->
+            <a href="#" class="social-link" aria-label="Facebook">📘</a>
+            <a href="#" class="social-link" aria-label="Twitter">🐦</a>
+            <a href="#" class="social-link" aria-label="Instagram">📷</a>
+            <a href="#" class="social-link" aria-label="LinkedIn">💼</a>
+            <a href="#" class="social-link" aria-label="YouTube">📺</a>
+        </div>
+        <p class="footer-text">© 2024 LaptopFinder Pro. Helping you find the perfect laptop with AI-powered recommendations.</p>
+    </footer>
+
+    <script>
+        // Laptop database with comprehensive information
+        const laptopDatabase = [
+            {
+                id: 1,
+                name: "MacBook Air M2",
+                price: "$1,199",
+                image: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
+                specs: {
+                    processor: "Apple M2 8-core",
+                    ram: "8GB Unified Memory",
+                    storage: "256GB SSD",
+                    display: "13.6-inch Liquid Retina",
+                    battery: "Up to 18 hours",
+                    weight: "2.7 lbs",
+                    graphics: "8-core GPU"
+                },
+                rating: 4.8,
+                bestFor: ["student", "work", "portability", "battery"],
+                priceRange: [1000, 1500],
+                screenSize: "small",
+                os: "macos",
+                videoReview: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                learnMore: "https://apple.com/macbook-air"
+            },
+            {
+                id: 2,
+                name: "Dell XPS 15",
+                price: "$1,599",
+                image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
+                specs: {
+                    processor: "Intel Core i7-12700H",
+                    ram: "16GB DDR4",
+                    storage: "512GB NVMe SSD",
+                    display: "15.6-inch 4K OLED",
+                    battery: "Up to 13 hours",
+                    weight: "4.2 lbs",
+                    graphics: "NVIDIA RTX 3050 Ti"
+                },
+                rating: 4.6,
+                bestFor: ["creative", "performance", "display", "programming"],
+                priceRange: [1400, 2000],
+                screenSize: "medium",
+                os: "windows",
+                videoReview: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                learnMore: "https://dell.com/xps-15"
+            },
+            {
+                id: 3,
+                name: "ASUS ROG Strix G15",
+                price: "$1,399",
+                image: "https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
+                specs: {
+                    processor: "AMD Ryzen 7 6800H",
+                    ram: "16GB DDR5",
+                    storage: "1TB NVMe SSD",
+                    display: "15.6-inch 144Hz FHD",
+                    battery: "Up to 10 hours",
+                    weight: "5.1 lbs",
+                    graphics: "NVIDIA RTX 3070"
+                },
+                rating: 4.7,
+                bestFor: ["gaming", "performance", "creative"],
+                priceRange: [1200, 1700],
+                screenSize: "medium",
+                os: "windows",
+                videoReview: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                learnMore: "https://asus.com/rog-strix-g15"
+            },
+            {
+                id: 4,
+                name: "Lenovo ThinkPad X1 Carbon",
+                price: "$1,799",
+                image: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
+                specs: {
+                    processor: "Intel Core i7-1260P",
+                    ram: "16GB LPDDR5",
+                    storage: "512GB NVMe SSD",
+                    display: "14-inch 2.8K OLED",
+                    battery: "Up to 16 hours",
+                    weight: "2.48 lbs",
+                    graphics: "Intel Iris Xe"
+                },
+                rating: 4.5,
+                bestFor: ["work", "programming", "portability", "battery"],
+                priceRange: [1600, 2200],
+                screenSize: "small",
+                os: "windows",
+                videoReview: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                learnMore: "https://lenovo.com/thinkpad-x1-carbon"
+            },
+            {
+                id: 5,
+                name: "HP Spectre x360",
+                price: "$1,299",
+                image: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
+                specs: {
+                    processor: "Intel Core i7-1255U",
+                    ram: "16GB LPDDR4x",
+                    storage: "512GB NVMe SSD",
+                    display: "13.5-inch 3K2K Touch",
+                    battery: "Up to 17 hours",
+                    weight: "3.01 lbs",
+                    graphics: "Intel Iris Xe"
+                },
+                rating: 4.4,
+                bestFor: ["student", "creative", "portability", "display"],
+                priceRange: [1100, 1500],
+                screenSize: "small",
+                os: "windows",
+                videoReview: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                learnMore: "https://hp.com/spectre-x360"
+            },
+            {
+                id: 6,
+                name: "ASUS ZenBook 14",
+                price: "$799",
+                image: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
+                specs: {
+                    processor: "AMD Ryzen 5 5500U",
+                    ram: "8GB DDR4",
+                    storage: "256GB NVMe SSD",
+                    display: "14-inch FHD IPS",
+                    battery: "Up to 14 hours",
+                    weight: "3.2 lbs",
+                    graphics: "AMD Radeon Graphics"
+                },
+                rating: 4.3,
+                bestFor: ["student", "work", "budget"],
+                priceRange: [600, 1000],
+                screenSize: "small",
+                os: "windows",
+                videoReview: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                learnMore: "https://asus.com/zenbook-14"
+            },
+            {
+                id: 7,
+                name: "MacBook Pro 16-inch",
+                price: "$2,499",
+                image: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
+                specs: {
+                    processor: "Apple M2 Pro 12-core",
+                    ram: "16GB Unified Memory",
+                    storage: "512GB SSD",
+                    display: "16.2-inch Liquid Retina XDR",
+                    battery: "Up to 22 hours",
+                    weight: "4.7 lbs",
+                    graphics: "19-core GPU"
+                },
+                rating: 4.9,
+                bestFor: ["creative", "programming", "performance", "display"],
+                priceRange: [2200, 3000],
+                screenSize: "medium",
+                os: "macos",
+                videoReview: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                learnMore: "https://apple.com/macbook-pro"
+            },
+            {
+                id: 8,
+                name: "Google Pixelbook Go",
+                price: "$649",
+                image: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
+                specs: {
+                    processor: "Intel Core m3",
+                    ram: "8GB LPDDR3",
+                    storage: "64GB eMMC",
+                    display: "13.3-inch Full HD",
+                    battery: "Up to 12 hours",
+                    weight: "2.3 lbs",
+                    graphics: "Intel UHD Graphics"
+                },
+                rating: 4.2,
+                bestFor: ["student", "work", "budget", "portability"],
+                priceRange: [500, 800],
+                screenSize: "small",
+                os: "chromeos",
+                videoReview: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                learnMore: "https://store.google.com/pixelbook-go"
+            },
+            {
+                id: 9,
+                name: "MSI Creator Z16",
+                price: "$2,199",
+                image: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
+                specs: {
+                    processor: "Intel Core i7-11800H",
+                    ram: "32GB DDR4",
+                    storage: "1TB NVMe SSD",
+                    display: "16-inch 4K+ Touch",
+                    battery: "Up to 9 hours",
+                    weight: "5.1 lbs",
+                    graphics: "NVIDIA RTX 3060"
+                },
+                rating: 4.6,
+                bestFor: ["creative", "programming", "performance", "display"],
+                priceRange: [2000, 2500],
+                screenSize: "medium",
+                os: "windows",
+                videoReview: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                learnMore: "https://msi.com/creator-z16"
+            }
+        ];
+
+        // Form handling and recommendation logic
+        let currentBudget = 1000;
+
+        // Initialize particles
+        function createParticles() {
+            const particlesContainer = document.querySelector('.hero-particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Budget slider functionality
+        const budgetSlider = document.getElementById('budgetSlider');
+        const budgetValue = document.getElementById('budgetValue');
+
+        budgetSlider.addEventListener('input', (e) => {
+            currentBudget = parseInt(e.target.value);
+            budgetValue.textContent = `$${currentBudget.toLocaleString()}`;
+        });
+
+        // Radio button selection handling
+        document.querySelectorAll('.radio-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const radio = option.querySelector('input[type="radio"]');
+                const name = radio.name;
+                
+                // Remove selected class from all options with same name
+                document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+                    r.closest('.radio-option').classList.remove('selected');
+                });
+                
+                // Add selected class to clicked option
+                option.classList.add('selected');
+                radio.checked = true;
+            });
+        });
+
+        // Navigation functionality
+        function scrollToForm() {
+            hideAllSections();
+            document.getElementById('recommend').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+        }
+
+        function scrollToSection(sectionId) {
+            hideAllSections();
+            const section = document.getElementById(sectionId);
+            if (section) {
+                if (sectionId === 'home') {
+                    // For home, just scroll to top
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else if (['about', 'contact'].includes(sectionId)) {
+                    // Show and scroll to these sections
+                    section.classList.add('show');
+                    setTimeout(() => {
+                        section.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                } else {
+                    // For recommend section, just scroll
+                    section.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        }
+
+        function hideAllSections() {
+            document.querySelectorAll('.about-section, .contact-section').forEach(section => {
+                section.classList.remove('show');
+            });
+        }
+
+        // Mobile navigation functions
+        function toggleMobileMenu() {
+            const mobileNav = document.getElementById('mobileNav');
+            mobileNav.classList.toggle('show');
+            
+            // Prevent scrolling when menu is open
+            if (mobileNav.classList.contains('show')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function mobileNavigate(sectionId) {
+            toggleMobileMenu(); // Close mobile menu
+            setTimeout(() => {
+                scrollToSection(sectionId);
+            }, 300);
+        }
+
+        // Header scroll behavior
+        let lastScrollTop = 0;
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const header = document.getElementById('header');
+            
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                header.classList.add('hidden');
+            } else {
+                header.classList.remove('hidden');
+            }
+            lastScrollTop = scrollTop;
+        });
+
+        // Form submission and recommendation logic
+        document.getElementById('laptopForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const preferences = {
+                primaryUse: formData.get('primaryUse'),
+                budget: currentBudget,
+                screenSize: formData.get('screenSize'),
+                priority: formData.get('priority'),
+                operatingSystem: formData.get('operatingSystem')
+            };
+
+            // Show loading spinner
+            document.getElementById('loadingSpinner').style.display = 'block';
+            
+            // Simulate processing time
+            setTimeout(() => {
+                const recommendations = getRecommendations(preferences);
+                displayRecommendations(recommendations);
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }, 2000);
+        });
+
+        // Contact form submission
+        document.getElementById('contactForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const contactData = {
+                name: formData.get('name') || e.target.querySelector('input[placeholder="Your Name"]').value,
+                email: formData.get('email') || e.target.querySelector('input[placeholder="Your Email"]').value,
+                subject: formData.get('subject') || e.target.querySelector('input[placeholder="Subject"]').value,
+                message: formData.get('message') || e.target.querySelector('textarea').value
+            };
+
+            // Simulate form submission
+            const submitButton = e.target.querySelector('.contact-button');
+            const originalText = submitButton.textContent;
+            
+            submitButton.textContent = 'Sending...';
+            submitButton.disabled = true;
+            
+            setTimeout(() => {
+                submitButton.textContent = 'Message Sent!';
+                submitButton.style.background = 'linear-gradient(135deg, #00ff88, #00cc6a)';
+                
+                // Reset form
+                e.target.reset();
+                
+                // Show success message
+                const successMessage = document.createElement('div');
+                successMessage.style.cssText = `
+                    background: rgba(0, 255, 136, 0.1);
+                    border: 1px solid #00ff88;
+                    color: #00ff88;
+                    padding: 1rem;
+                    border-radius: 8px;
+                    margin-top: 1rem;
+                    text-align: center;
+                    font-weight: 600;
+                `;
+                successMessage.textContent = 'Thank you for your message! We\'ll get back to you within 2 hours.';
+                e.target.appendChild(successMessage);
+                
+                // Reset button after 3 seconds
+                setTimeout(() => {
+                    submitButton.textContent = originalText;
+                    submitButton.disabled = false;
+                    submitButton.style.background = 'linear-gradient(135deg, #40e0ff, #00bcd4)';
+                    if (successMessage.parentNode) {
+                        successMessage.remove();
+                    }
+                }, 3000);
+            }, 1500);
+        });
+
+        function getRecommendations(preferences) {
+            let scored = laptopDatabase.map(laptop => {
+                let score = 0;
+                
+                // Budget scoring (40% weight)
+                const budgetMatch = getBudgetScore(laptop.priceRange, preferences.budget);
+                score += budgetMatch * 0.4;
+                
+                // Use case scoring (30% weight)
+                if (laptop.bestFor.includes(preferences.primaryUse)) {
+                    score += 0.3;
+                }
+                
+                // Screen size scoring (15% weight)
+                if (laptop.screenSize === preferences.screenSize) {
+                    score += 0.15;
+                }
+                
+                // Priority scoring (10% weight)
+                if (laptop.bestFor.includes(preferences.priority)) {
+                    score += 0.1;
+                }
+                
+                // OS scoring (5% weight)
+                if (preferences.operatingSystem === 'any' || laptop.os === preferences.operatingSystem) {
+                    score += 0.05;
+                }
+                
+                return { ...laptop, score };
+            });
+            
+            // Sort by score and return top 3
+            return scored.sort((a, b) => b.score - a.score).slice(0, 3);
+        }
+
+        function getBudgetScore(priceRange, budget) {
+            const [min, max] = priceRange;
+            if (budget >= min && budget <= max) {
+                return 1; // Perfect match
+            } else if (budget < min) {
+                const diff = min - budget;
+                return Math.max(0, 1 - (diff / 500)); // Penalty for being under budget
+            } else {
+                const diff = budget - max;
+                return Math.max(0, 1 - (diff / 1000)); // Penalty for being over budget
+            }
+        }
+
+        function displayRecommendations(recommendations) {
+            const grid = document.getElementById('laptopsGrid');
+            grid.innerHTML = '';
+            
+            recommendations.forEach((laptop, index) => {
+                const card = createLaptopCard(laptop, index === 0);
+                grid.appendChild(card);
+            });
+            
+            // Show the recommendations section
+            const section = document.getElementById('recommendations');
+            section.classList.add('show');
+            
+            // Scroll to recommendations
+            setTimeout(() => {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }, 300);
+        }
+
+        function createLaptopCard(laptop, isBestMatch = false) {
+            const card = document.createElement('div');
+            card.className = `laptop-card ${isBestMatch ? 'best-match' : ''}`;
+            
+            const stars = '★'.repeat(Math.floor(laptop.rating)) + 
+                         (laptop.rating % 1 >= 0.5 ? '☆' : '') + 
+                         '☆'.repeat(5 - Math.ceil(laptop.rating));
+            
+            card.innerHTML = `
+                <img src="${laptop.image}" alt="${laptop.name}" class="laptop-image">
+                <h3 class="laptop-name">${laptop.name}</h3>
+                <div class="laptop-price">${laptop.price}</div>
+                <div class="rating">
+                    <span class="stars">${stars}</span>
+                    <span class="rating-text">${laptop.rating}/5</span>
+                </div>
+                <ul class="laptop-specs">
+                    <li><span class="spec-label">Processor:</span> <span class="spec-value">${laptop.specs.processor}</span></li>
+                    <li><span class="spec-label">RAM:</span> <span class="spec-value">${laptop.specs.ram}</span></li>
+                    <li><span class="spec-label">Storage:</span> <span class="spec-value">${laptop.specs.storage}</span></li>
+                    <li><span class="spec-label">Display:</span> <span class="spec-value">${laptop.specs.display}</span></li>
+                    <li><span class="spec-label">Battery:</span> <span class="spec-value">${laptop.specs.battery}</span></li>
+                    <li><span class="spec-label">Weight:</span> <span class="spec-value">${laptop.specs.weight}</span></li>
+                    <li><span class="spec-label">Graphics:</span> <span class="spec-value">${laptop.specs.graphics}</span></li>
+                </ul>
+                <div class="button-group">
+                    <a href="${laptop.learnMore}" target="_blank" class="learn-more-button">Learn More</a>
+                    <a href="${laptop.videoReview}" target="_blank" class="video-review-button">Watch Review</a>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Video background optimization for seamless playback
+        function optimizeVideoPlayback() {
+            const video = document.querySelector('.video-background video');
+            if (video) {
+                // Ensure video plays immediately and smoothly
+                video.addEventListener('loadeddata', () => {
+                    video.currentTime = 0;
+                });
+
+                // Handle seamless looping
+                video.addEventListener('timeupdate', () => {
+                    // Reset video slightly before it ends to avoid any gap
+                    if (video.currentTime >= video.duration - 0.1) {
+                        video.currentTime = 0;
+                    }
+                });
+
+                // Force video to start playing if autoplay fails
+                video.addEventListener('loadstart', () => {
+                    const playPromise = video.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(() => {
+                            // Autoplay failed, but that's okay for background videos
+                            console.log('Autoplay prevented, but video will play when user interacts');
+                        });
+                    }
+                });
+
+                // Optimize video quality and performance
+                video.addEventListener('canplay', () => {
+                    video.playbackRate = 1.0; // Ensure normal speed
+                    if (video.paused) {
+                        video.play();
+                    }
+                });
+
+                // Handle visibility change to maintain smooth playback
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden && video.paused) {
+                        video.play();
+                    }
+                });
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            optimizeVideoPlayback();
+        });
+    </script>
+</body>
+</html>
