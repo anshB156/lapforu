@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LaptopFinder Pro - AI-Powered Laptop Recommendations</title>
+    <title>LaptopForU - AI-Powered Laptop Recommendations</title>
     <style>
-        /* CSS Reset and Base Styles */
         * {
             margin: 0;
             padding: 0;
@@ -24,7 +23,6 @@
             background: #0a0a0a;
         }
 
-        /* Video Background */
         .video-background {
             position: fixed;
             top: 0;
@@ -43,11 +41,9 @@
             height: 100%;
             object-fit: cover;
             object-position: center;
-            /* Ensure seamless loop */
             filter: brightness(0.7) contrast(1.1);
         }
 
-        /* Fallback for browsers that don't support object-fit */
         @supports not (object-fit: cover) {
             .video-background video {
                 position: absolute;
@@ -71,7 +67,6 @@
             z-index: -1;
         }
 
-        /* Header and Navigation */
         .header {
             position: fixed;
             top: 0;
@@ -191,14 +186,12 @@
             background: linear-gradient(90deg, #40e0ff, #00bcd4);
         }
 
-        /* Main Content Container */
         .main-content {
             position: relative;
             z-index: 1;
             min-height: 100vh;
         }
 
-        /* Hero Section */
         .hero-section {
             height: 100vh;
             display: flex;
@@ -284,7 +277,6 @@
             background: linear-gradient(135deg, #50f0ff, #10ccd4);
         }
 
-        /* Form Section */
         .form-section {
             background: rgba(0, 10, 20, 0.95);
             backdrop-filter: blur(25px);
@@ -478,7 +470,6 @@
             transform: none;
         }
 
-        /* Recommendation Section */
         .recommendation-section {
             background: rgba(0, 10, 20, 0.95);
             backdrop-filter: blur(25px);
@@ -687,7 +678,6 @@
             letter-spacing: 1px;
         }
 
-        /* Contact Section */
         .contact-section {
             background: rgba(0, 10, 20, 0.95);
             backdrop-filter: blur(25px);
@@ -890,7 +880,6 @@
             font-size: 1.3rem;
         }
 
-        /* Footer */
         .footer {
             background: rgba(0, 0, 0, 0.95);
             padding: 4rem 2rem 2rem 2rem;
@@ -935,7 +924,6 @@
             margin-top: 2rem;
         }
 
-        /* Loading Animation */
         .loading-spinner {
             display: none;
             width: 50px;
@@ -952,7 +940,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Animations */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -975,7 +962,6 @@
             }
         }
 
-        /* Responsive Design */
         @media (max-width: 968px) {
             .hero-title {
                 font-size: 3rem;
@@ -1098,33 +1084,19 @@
     </style>
 </head>
 <body>
-    <!-- Video Background -->
     <div class="video-background">
-        <!-- 
-        TO ADD YOUR OWN VIDEO:
-        1. Upload your video file to the project (drag and drop into file explorer)
-        2. Replace "your-video-file.mp4" below with your actual filename
-        3. Supported formats: MP4, WebM, OGV
-        4. Recommended: Use a video that's 10-30 seconds long for seamless looping
-        5. For best performance, compress your video to under 50MB
         
-        Example: If your video is named "background.mp4", change the src to:
-        <source src="background.mp4" type="video/mp4">
-        -->
         <video autoplay muted loop playsinline preload="auto">
             <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
             <source src="https://sample-videos.com/zip/10/webm/SampleVideo_1280x720_1mb.webm" type="video/webm">
-            <!-- Fallback for older browsers -->
             Your browser does not support the video tag.
         </video>
     </div>
     <div class="video-overlay"></div>
 
-    <!-- Header -->
     <header class="header" id="header">
         <div class="nav-container">
-            <!-- Replace this URL with your actual logo -->
-            <img src="https://via.placeholder.com/250x60/40e0ff/000000?text=LaptopFinder+Pro" alt="LaptopFinder Pro" class="logo">
+            <img src="img10.png" alt="LaptopForU" class="logo">
             <nav>
                 <ul class="nav-links">
                     <li><a href="#home" onclick="scrollToSection('home')">Home</a></li>
@@ -1137,7 +1109,6 @@
         </div>
     </header>
 
-    <!-- Mobile Navigation -->
     <div class="mobile-nav" id="mobileNav">
         <button class="close-mobile-menu" onclick="toggleMobileMenu()">✕</button>
         <a href="#home" onclick="mobileNavigate('home')">Home</a>
@@ -1146,25 +1117,20 @@
         <a href="#contact" onclick="mobileNavigate('contact')">Contact</a>
     </div>
 
-    <!-- Main Content -->
     <main class="main-content">
-        <!-- Hero Section -->
         <section class="hero-section" id="home">
             <div class="hero-particles"></div>
-            <!-- Replace this URL with your actual logo -->
-            <img src="https://via.placeholder.com/350x120/40e0ff/000000?text=LaptopFinder+Pro" alt="LaptopFinder Pro" class="hero-logo">
+            <img src="img10.png" alt="LaptopForU" class="hero-logo">
             <h1 class="hero-title">Find Your Perfect Laptop</h1>
             <p class="hero-subtitle">Advanced AI-powered recommendations with detailed specs, budgets, and video reviews to help you make the best choice</p>
             <button class="cta-button" onclick="scrollToForm()">Start Finding</button>
         </section>
 
-        <!-- Form Section -->
         <section class="form-section" id="recommend">
-            <h2 class="form-title">Tell Us Your Requirements</h2>
+            <h2 class="form-title">Tell Me Your Requirements</h2>
             <form id="laptopForm">
-                <!-- Question 1: Primary Use -->
                 <div class="form-group">
-                    <label class="form-label">What's your primary use case?</label>
+                    <label class="form-label">What's your primary use case?Like,what will you use it for?</label>
                     <div class="radio-group">
                         <div class="radio-option">
                             <input type="radio" id="use-student" name="primaryUse" value="student">
@@ -1204,7 +1170,6 @@
                     </div>
                 </div>
 
-                <!-- Question 2: Budget Range -->
                 <div class="form-group">
                     <label class="form-label">What's your budget range?</label>
                     <div class="slider-container">
@@ -1213,7 +1178,6 @@
                     </div>
                 </div>
 
-                <!-- Question 3: Screen Size Preference -->
                 <div class="form-group">
                     <label class="form-label">Preferred screen size?</label>
                     <div class="radio-group">
@@ -1241,7 +1205,6 @@
                     </div>
                 </div>
 
-                <!-- Question 4: Performance Priority -->
                 <div class="form-group">
                     <label class="form-label">What's most important to you?</label>
                     <div class="radio-group">
@@ -1276,7 +1239,6 @@
                     </div>
                 </div>
 
-                <!-- Question 5: Operating System -->
                 <div class="form-group">
                     <label class="form-label">Preferred operating system?</label>
                     <select class="select-input" id="osSelect" name="operatingSystem">
@@ -1294,28 +1256,25 @@
             </form>
         </section>
 
-        <!-- Recommendation Section -->
         <section class="recommendation-section" id="recommendations">
             <h2 class="recommendation-title">Your Personalized Recommendations</h2>
             <div class="laptops-grid" id="laptopsGrid">
-                <!-- Laptop recommendations will be dynamically inserted here -->
             </div>
         </section>
 
-        <!-- About Section -->
         <section class="about-section" id="about">
-            <h2 class="about-title">About LaptopFinder Pro</h2>
+            <h2 class="about-title">About LaptopForU</h2>
             <div class="about-content">
-                <p>LaptopFinder Pro uses advanced AI algorithms to analyze your specific needs and preferences, 
+                <p>LaptopForU uses advanced AI algorithms to analyze your specific needs and preferences, 
                 providing personalized laptop recommendations that perfectly match your requirements and budget. 
-                Our comprehensive database includes detailed specifications, real user ratings, and expert reviews 
+                Here my comprehensive database includes detailed specifications, real user ratings, and expert reviews 
                 to help you make the best decision.</p>
             </div>
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon">🤖</div>
                     <h3>AI-Powered Matching</h3>
-                    <p>Our smart algorithm analyzes your usage patterns and preferences to find the perfect laptop match.</p>
+                    <p>My smart algorithm analyzes your usage patterns and preferences to find the perfect laptop match.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">💰</div>
@@ -1330,16 +1289,15 @@
                 <div class="feature-card">
                     <div class="feature-icon">⚡</div>
                     <h3>Real-Time Updates</h3>
-                    <p>Our database is constantly updated with the latest models and current market prices.</p>
+                    <p>My database is constantly updated with the latest models and current market prices.</p>
                 </div>
             </div>
         </section>
 
-        <!-- Contact Section -->
         <section class="contact-section" id="contact">
             <h2 class="contact-title">Get In Touch</h2>
-            <p class="contact-subtitle">Have questions about our recommendations? Need help choosing the perfect laptop? 
-            We're here to assist you in finding exactly what you need.</p>
+            <p class="contact-subtitle">Have questions about my recommendations? Need help choosing the perfect laptop? 
+            I'm here to assist you in finding exactly what you need.</p>
             
             <form class="contact-form" id="contactForm">
                 <input type="text" class="contact-input" placeholder="Your Name" required>
@@ -1353,7 +1311,7 @@
                 <div class="contact-item">
                     <div class="contact-icon">📧</div>
                     <h4>Email Support</h4>
-                    <p>support@laptopfinderpro.com</p>
+                    <p>sarnabbhattacharjee00@gmail.com</p>
                 </div>
                 <div class="contact-item">
                     <div class="contact-icon">💬</div>
@@ -1369,21 +1327,18 @@
         </section>
     </main>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="social-links">
-            <!-- Replace these with your actual social media links -->
-            <a href="#" class="social-link" aria-label="Facebook">📘</a>
-            <a href="#" class="social-link" aria-label="Twitter">🐦</a>
-            <a href="#" class="social-link" aria-label="Instagram">📷</a>
-            <a href="#" class="social-link" aria-label="LinkedIn">💼</a>
-            <a href="#" class="social-link" aria-label="YouTube">📺</a>
+            <a href="#" class="social-link" aria-label="Facebook">F</a>
+            <a href="#" class="social-link" aria-label="Twitter">X</a>
+            <a href="#" class="social-link" aria-label="Instagram">IG</a>
+            <a href="#" class="social-link" aria-label="LinkedIn">G</a>
+            <a href="#" class="social-link" aria-label="YouTube">Y</a>
         </div>
-        <p class="footer-text">© 2024 LaptopFinder Pro. Helping you find the perfect laptop with AI-powered recommendations.</p>
+        <p class="footer-text">© 2025 LaptopForU. Helping you find the perfect laptop with AI-powered recommendations.</p>
     </footer>
 
     <script>
-        // Laptop database with comprehensive information
         const laptopDatabase = [
             {
                 id: 1,
@@ -1585,10 +1540,8 @@
             }
         ];
 
-        // Form handling and recommendation logic
         let currentBudget = 1000;
 
-        // Initialize particles
         function createParticles() {
             const particlesContainer = document.querySelector('.hero-particles');
             for (let i = 0; i < 50; i++) {
@@ -1601,7 +1554,6 @@
             }
         }
 
-        // Budget slider functionality
         const budgetSlider = document.getElementById('budgetSlider');
         const budgetValue = document.getElementById('budgetValue');
 
@@ -1610,24 +1562,20 @@
             budgetValue.textContent = `$${currentBudget.toLocaleString()}`;
         });
 
-        // Radio button selection handling
         document.querySelectorAll('.radio-option').forEach(option => {
             option.addEventListener('click', () => {
                 const radio = option.querySelector('input[type="radio"]');
                 const name = radio.name;
                 
-                // Remove selected class from all options with same name
                 document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
                     r.closest('.radio-option').classList.remove('selected');
                 });
                 
-                // Add selected class to clicked option
                 option.classList.add('selected');
                 radio.checked = true;
             });
         });
 
-        // Navigation functionality
         function scrollToForm() {
             hideAllSections();
             document.getElementById('recommend').scrollIntoView({ 
@@ -1640,16 +1588,13 @@
             const section = document.getElementById(sectionId);
             if (section) {
                 if (sectionId === 'home') {
-                    // For home, just scroll to top
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 } else if (['about', 'contact'].includes(sectionId)) {
-                    // Show and scroll to these sections
                     section.classList.add('show');
                     setTimeout(() => {
                         section.scrollIntoView({ behavior: 'smooth' });
                     }, 100);
                 } else {
-                    // For recommend section, just scroll
                     section.scrollIntoView({ behavior: 'smooth' });
                 }
             }
@@ -1661,12 +1606,10 @@
             });
         }
 
-        // Mobile navigation functions
         function toggleMobileMenu() {
             const mobileNav = document.getElementById('mobileNav');
             mobileNav.classList.toggle('show');
             
-            // Prevent scrolling when menu is open
             if (mobileNav.classList.contains('show')) {
                 document.body.style.overflow = 'hidden';
             } else {
@@ -1675,13 +1618,12 @@
         }
 
         function mobileNavigate(sectionId) {
-            toggleMobileMenu(); // Close mobile menu
+            toggleMobileMenu(); 
             setTimeout(() => {
                 scrollToSection(sectionId);
             }, 300);
         }
 
-        // Header scroll behavior
         let lastScrollTop = 0;
         window.addEventListener('scroll', () => {
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
@@ -1695,7 +1637,6 @@
             lastScrollTop = scrollTop;
         });
 
-        // Form submission and recommendation logic
         document.getElementById('laptopForm').addEventListener('submit', (e) => {
             e.preventDefault();
             
@@ -1708,10 +1649,8 @@
                 operatingSystem: formData.get('operatingSystem')
             };
 
-            // Show loading spinner
             document.getElementById('loadingSpinner').style.display = 'block';
             
-            // Simulate processing time
             setTimeout(() => {
                 const recommendations = getRecommendations(preferences);
                 displayRecommendations(recommendations);
@@ -1719,7 +1658,6 @@
             }, 2000);
         });
 
-        // Contact form submission
         document.getElementById('contactForm').addEventListener('submit', (e) => {
             e.preventDefault();
             
@@ -1731,7 +1669,6 @@
                 message: formData.get('message') || e.target.querySelector('textarea').value
             };
 
-            // Simulate form submission
             const submitButton = e.target.querySelector('.contact-button');
             const originalText = submitButton.textContent;
             
@@ -1742,10 +1679,7 @@
                 submitButton.textContent = 'Message Sent!';
                 submitButton.style.background = 'linear-gradient(135deg, #00ff88, #00cc6a)';
                 
-                // Reset form
                 e.target.reset();
-                
-                // Show success message
                 const successMessage = document.createElement('div');
                 successMessage.style.cssText = `
                     background: rgba(0, 255, 136, 0.1);
@@ -1757,10 +1691,9 @@
                     text-align: center;
                     font-weight: 600;
                 `;
-                successMessage.textContent = 'Thank you for your message! We\'ll get back to you within 2 hours.';
+                successMessage.textContent = 'Thank you for your message! I\'ll get back to you within 2 hours.';
                 e.target.appendChild(successMessage);
                 
-                // Reset button after 3 seconds
                 setTimeout(() => {
                     submitButton.textContent = originalText;
                     submitButton.disabled = false;
@@ -1776,26 +1709,21 @@
             let scored = laptopDatabase.map(laptop => {
                 let score = 0;
                 
-                // Budget scoring (40% weight)
                 const budgetMatch = getBudgetScore(laptop.priceRange, preferences.budget);
                 score += budgetMatch * 0.4;
                 
-                // Use case scoring (30% weight)
                 if (laptop.bestFor.includes(preferences.primaryUse)) {
                     score += 0.3;
                 }
                 
-                // Screen size scoring (15% weight)
                 if (laptop.screenSize === preferences.screenSize) {
                     score += 0.15;
                 }
                 
-                // Priority scoring (10% weight)
                 if (laptop.bestFor.includes(preferences.priority)) {
                     score += 0.1;
                 }
                 
-                // OS scoring (5% weight)
                 if (preferences.operatingSystem === 'any' || laptop.os === preferences.operatingSystem) {
                     score += 0.05;
                 }
@@ -1803,20 +1731,19 @@
                 return { ...laptop, score };
             });
             
-            // Sort by score and return top 3
             return scored.sort((a, b) => b.score - a.score).slice(0, 3);
         }
 
         function getBudgetScore(priceRange, budget) {
             const [min, max] = priceRange;
             if (budget >= min && budget <= max) {
-                return 1; // Perfect match
+                return 1; 
             } else if (budget < min) {
                 const diff = min - budget;
-                return Math.max(0, 1 - (diff / 500)); // Penalty for being under budget
+                return Math.max(0, 1 - (diff / 500)); 
             } else {
                 const diff = budget - max;
-                return Math.max(0, 1 - (diff / 1000)); // Penalty for being over budget
+                return Math.max(0, 1 - (diff / 1000)); 
             }
         }
 
@@ -1829,11 +1756,9 @@
                 grid.appendChild(card);
             });
             
-            // Show the recommendations section
             const section = document.getElementById('recommendations');
             section.classList.add('show');
             
-            // Scroll to recommendations
             setTimeout(() => {
                 section.scrollIntoView({ behavior: 'smooth' });
             }, 300);
@@ -1873,43 +1798,35 @@
             return card;
         }
 
-        // Video background optimization for seamless playback
         function optimizeVideoPlayback() {
             const video = document.querySelector('.video-background video');
             if (video) {
-                // Ensure video plays immediately and smoothly
                 video.addEventListener('loadeddata', () => {
                     video.currentTime = 0;
                 });
 
-                // Handle seamless looping
                 video.addEventListener('timeupdate', () => {
-                    // Reset video slightly before it ends to avoid any gap
                     if (video.currentTime >= video.duration - 0.1) {
                         video.currentTime = 0;
                     }
                 });
 
-                // Force video to start playing if autoplay fails
                 video.addEventListener('loadstart', () => {
                     const playPromise = video.play();
                     if (playPromise !== undefined) {
                         playPromise.catch(() => {
-                            // Autoplay failed, but that's okay for background videos
                             console.log('Autoplay prevented, but video will play when user interacts');
                         });
                     }
                 });
 
-                // Optimize video quality and performance
                 video.addEventListener('canplay', () => {
-                    video.playbackRate = 1.0; // Ensure normal speed
+                    video.playbackRate = 1.0; 
                     if (video.paused) {
                         video.play();
                     }
                 });
 
-                // Handle visibility change to maintain smooth playback
                 document.addEventListener('visibilitychange', () => {
                     if (!document.hidden && video.paused) {
                         video.play();
@@ -1918,7 +1835,6 @@
             }
         }
 
-        // Initialize the application
         document.addEventListener('DOMContentLoaded', () => {
             createParticles();
             optimizeVideoPlayback();
